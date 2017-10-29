@@ -249,7 +249,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
     <span class="cf">return</span> <span class="at">div</span>([
-        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks)
     ])<span class="op">;</span>
 <span class="op">}</span>
 
@@ -269,7 +269,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
     <span class="cf">return</span> <span class="at">div</span>([
-        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks)
     ])<span class="op">;</span>
 <span class="op">}</span>
 
@@ -314,7 +314,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Can anyone spot the bug in the code from earlier?</p>
 <div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
     <span class="cf">return</span> <span class="at">div</span>([
-        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks)
     ])<span class="op">;</span>
 <span class="op">}</span>
 
@@ -334,7 +334,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="with-signals">With Signals</h2>
 <div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
     <span class="cf">return</span> <span class="at">div</span>([
-        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks)
     ])<span class="op">;</span>
 <span class="op">}</span>
 <span class="kw">function</span> <span class="at">applicationLogic</span>(click$) <span class="op">{</span>
@@ -352,6 +352,39 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
     <span class="at">patchDOM</span>(<span class="va">domSignal</span>.<span class="at">pull</span>())<span class="op">;</span> <span class="at">patch</span>()<span class="op">;</span>
 <span class="op">}</span>)<span class="op">;</span>
 <span class="at">patch</span>()<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="with-signals---advanced">With Signals - Advanced</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">view</span>(num) <span class="op">{</span>
+    <span class="cf">return</span> <span class="at">div</span>([
+        <span class="at">span</span>(<span class="st">&#39;Your random number is: &#39;</span> <span class="op">+</span> num)
+    ])<span class="op">;</span>
+<span class="op">}</span>
+<span class="kw">function</span> <span class="at">applicationLogic</span>(click$<span class="op">,</span> randomSignal) <span class="op">{</span>
+    <span class="cf">return</span> click$
+        .<span class="at">sample</span>(randomSignal)
+        .<span class="at">toSignal</span>(<span class="st">&#39;&#39;</span>) <span class="co">//initial value</span>
+        .<span class="at">map</span>(view)
+<span class="op">}</span>
+<span class="kw">const</span> domSignal <span class="op">=</span> <span class="at">applicationLogic</span>(
+    <span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>)<span class="op">,</span>
+    <span class="at">fromGetter</span>(() <span class="op">=&gt;</span> <span class="va">Math</span>.<span class="at">random</span>())
+)<span class="op">;</span>
+
+<span class="kw">const</span> patch <span class="op">=</span> () <span class="op">=&gt;</span> <span class="at">requestAnimationFrame</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="at">patchDOM</span>(<span class="va">domSignal</span>.<span class="at">pull</span>())<span class="op">;</span> <span class="at">patch</span>()<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span>
+<span class="at">patch</span>()<span class="op">;</span></code></pre></div>
+</section>
+<section id="bonus-round-visualizability" class="slide level1">
+<h1>Bonus Round: Visualizability</h1>
+</section>
+<section class="slide level1">
+
+<figure>
+<img src="./stream_graph.png" alt="Stream graph" /><figcaption>Stream graph</figcaption>
+</figure>
 </section>
     </div>
   </div>

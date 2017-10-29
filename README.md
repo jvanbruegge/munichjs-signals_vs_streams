@@ -316,4 +316,37 @@ const patch = () => requestAnimationFrame(() => {
 patch();
 ```
 
+------------------
 
+## With Signals - Advanced
+
+```js
+function view(num) {
+    return div([
+        span('Your random number is: ' + num)
+    ]);
+}
+function applicationLogic(click$, randomSignal) {
+    return click$
+        .sample(randomSignal)
+        .toSignal('') //initial value
+        .map(view)
+}
+const domSignal = applicationLogic(
+    fromEvent(document.body, 'click'),
+    fromGetter(() => Math.random())
+);
+
+const patch = () => requestAnimationFrame(() => {
+    patchDOM(domSignal.pull()); patch();
+});
+patch();
+```
+
+------------------
+
+# Bonus Round: Visualizability
+
+------------------
+
+![Stream graph](./stream_graph.png)
