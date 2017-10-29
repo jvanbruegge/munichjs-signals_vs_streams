@@ -9,6 +9,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
   <link rel="stylesheet" href="reveal.js/css/reveal.css">
   <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #17b0de; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
   <link rel="stylesheet" href="reveal.js/css/theme/moon.css" id="theme">
   <!-- Printing and PDF exports -->
   <script>
@@ -31,6 +68,291 @@
 <h1>Signals vs Streams</h1>
 <p>Jan van Brügge</p>
 </section>
+<section id="what-is-a-stream" class="slide level1">
+<h1>What is a Stream?</h1>
+<p>Also called <code>Observable</code>, a sequence of <span style="color: yellow;"><strong>events</strong></span> ordered by time. A stream <span style="color: yellow;"><strong>pushes</strong></span> data from the producer to all <span style="color: yellow;"><strong>consumers</strong></span>.</p>
+</section>
+<section class="slide level1">
+
+<h2 id="in-detail">In detail</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> fromEvent <span class="im">from</span> <span class="st">&#39;xstream/extra/fromEvent&#39;</span><span class="op">;</span>
+
+<span class="kw">const</span> producer <span class="op">=</span> <span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>)<span class="op">;</span>
+
+<span class="kw">const</span> consumer <span class="op">=</span> <span class="op">{</span>
+    <span class="dt">next</span><span class="op">:</span> msg <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">log</span>(msg)<span class="op">,</span>
+    <span class="dt">error</span><span class="op">:</span> err <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">error</span>(err)<span class="op">,</span>
+    <span class="dt">complete</span><span class="op">:</span> () <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">log</span>(<span class="st">&#39;complete&#39;</span>)
+<span class="op">};</span>
+
+<span class="va">producer</span>.<span class="at">subscribe</span>(consumer)<span class="op">;</span></code></pre></div>
+</section>
+<section id="what-is-a-signal" class="slide level1">
+<h1>What is a Signal?</h1>
+<p>Also called <code>Behavior</code>, a <span style="color: yellow;"><strong>value</strong></span> that varies over time. A <span style="color: yellow;"><strong>consumer</strong></span> has to <span style="color: yellow;"><strong>pull</strong></span> data from the producer.</p>
+</section>
+<section class="slide level1">
+
+<h2 id="in-detail-1">In detail</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> <span class="op">{</span> fromGetter <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;ysignal&#39;</span><span class="op">;</span> <span class="co">//Not yet public</span>
+
+<span class="kw">const</span> signal <span class="op">=</span> <span class="at">fromGetter</span>(() <span class="op">=&gt;</span> <span class="va">document</span>.<span class="va">body</span>.<span class="at">innerHTML</span>)<span class="op">;</span>
+
+<span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+
+<span class="at">setTimeout</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+<span class="op">},</span> <span class="dv">100</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="compare-stream-vs-signals">Compare Stream vs Signals</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Stream</th>
+<th>Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>consumer role</td>
+<td>passive</td>
+<td>active</td>
+</tr>
+<tr class="even">
+<td>naive type</td>
+<td><code>[(Time, Event)]</code></td>
+<td><code>Time -&gt; Value</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level1">
+
+<h2 id="implementing-a-stream">Implementing a Stream</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> fromEvent <span class="im">from</span> <span class="st">&#39;xstream/extra/fromEvent&#39;</span><span class="op">;</span>
+
+<span class="kw">const</span> producer <span class="op">=</span> <span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>)<span class="op">;</span>
+
+<span class="kw">const</span> consumer <span class="op">=</span> <span class="op">{</span>
+    <span class="dt">next</span><span class="op">:</span> msg <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">log</span>(msg)<span class="op">,</span>
+    <span class="dt">error</span><span class="op">:</span> err <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">error</span>(err)
+<span class="op">};</span>
+
+<span class="va">producer</span>.<span class="at">subscribe</span>(consumer)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="implementing-a-stream-1">Implementing a Stream</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">const</span> producer <span class="op">=</span> <span class="op">{</span>
+    <span class="at">subscribe</span>(observer) <span class="op">{</span>
+        <span class="cf">try</span> <span class="op">{</span>
+            <span class="va">document</span>.<span class="va">body</span>.<span class="at">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> event <span class="op">=&gt;</span> <span class="op">{</span>
+                <span class="va">observer</span>.<span class="at">next</span>(event)<span class="op">;</span>
+            <span class="op">}</span>)<span class="op">;</span>
+        <span class="op">}</span> <span class="cf">catch</span>(e) <span class="op">{</span>
+            <span class="va">observer</span>.<span class="at">error</span>(e)<span class="op">;</span>
+        <span class="op">}</span>
+    <span class="op">}</span>
+<span class="op">};</span>
+
+<span class="kw">const</span> consumer <span class="op">=</span> <span class="op">{</span>
+    <span class="dt">next</span><span class="op">:</span> msg <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">log</span>(msg)<span class="op">,</span>
+    <span class="dt">error</span><span class="op">:</span> err <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">error</span>(err)
+<span class="op">}:</span>
+
+<span class="va">producer</span>.<span class="at">subscribe</span>(consumer)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="cleanup">Cleanup</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">fromEvent</span>(element<span class="op">,</span> type) <span class="op">{</span>
+    <span class="cf">return</span> <span class="op">{</span>
+        <span class="at">subscribe</span>(observer) <span class="op">{</span>
+            <span class="cf">try</span> <span class="op">{</span>
+                <span class="va">element</span>.<span class="at">addEventListener</span>(type<span class="op">,</span> event <span class="op">=&gt;</span> <span class="op">{</span>
+                    <span class="va">observer</span>.<span class="at">next</span>(event)<span class="op">;</span>
+                <span class="op">}</span>)<span class="op">;</span>
+            <span class="op">}</span> <span class="cf">catch</span> (e) <span class="op">{</span>
+                <span class="va">observer</span>.<span class="at">error</span>(e)<span class="op">;</span>
+            <span class="op">}</span>
+        <span class="op">}</span>
+    <span class="op">};</span>
+<span class="op">}</span>
+
+<span class="kw">const</span> producer <span class="op">=</span> <span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>)<span class="op">;</span>
+
+<span class="kw">const</span> consumer <span class="op">=</span> <span class="op">{</span>
+    <span class="dt">next</span><span class="op">:</span> msg <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">log</span>(msg)<span class="op">,</span>
+    <span class="dt">error</span><span class="op">:</span> err <span class="op">=&gt;</span> <span class="va">console</span>.<span class="at">error</span>(err)
+<span class="op">};</span>
+
+<span class="va">producer</span>.<span class="at">subscribe</span>(consumer)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="implementing-a-signal">Implementing a Signal</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> <span class="op">{</span> fromGetter <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;ysignal&#39;</span><span class="op">;</span> <span class="co">//Not yet public</span>
+
+<span class="kw">const</span> signal <span class="op">=</span> <span class="at">fromGetter</span>(() <span class="op">=&gt;</span> <span class="va">document</span>.<span class="va">body</span>.<span class="at">innerHTML</span>)<span class="op">;</span>
+
+<span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+
+<span class="at">setTimeout</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+<span class="op">},</span> <span class="dv">100</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="implementing-a-signal-1">Implementing a Signal</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">const</span> signal <span class="op">=</span> <span class="op">{</span>
+    <span class="at">pull</span>() <span class="op">{</span>
+        <span class="cf">return</span> <span class="va">document</span>.<span class="va">body</span>.<span class="at">innerHTML</span><span class="op">;</span>
+    <span class="op">}</span>
+<span class="op">}</span>
+
+<span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+
+<span class="at">setTimeout</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+<span class="op">},</span> <span class="dv">100</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="cleanup-1">Cleanup</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">fromGetter</span>(getter) <span class="op">{</span>
+    <span class="cf">return</span> <span class="op">{</span>
+        <span class="at">pull</span>() <span class="op">{</span>
+            <span class="cf">return</span> <span class="at">getter</span>()<span class="op">;</span>
+        <span class="op">}</span>
+    <span class="op">}</span>
+<span class="op">}</span>
+
+<span class="kw">const</span> signal <span class="op">=</span> <span class="at">fromGetter</span>(() <span class="op">=&gt;</span> <span class="va">document</span>.<span class="va">body</span>.<span class="at">innerHTML</span>)<span class="op">;</span>
+
+<span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+
+<span class="at">setTimeout</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="va">console</span>.<span class="at">log</span>(<span class="va">signal</span>.<span class="at">pull</span>())<span class="op">;</span>
+<span class="op">},</span> <span class="dv">100</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section id="so-what" class="slide level1">
+<h1>So what?</h1>
+<p>Ok, I can implement it, but what are the benefits of Signals and Streams?</p>
+</section>
+<section class="slide level1">
+
+<h2 id="without-streams">Without streams</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> <span class="op">{</span> patchDOM <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;./virtual-dom-patcher&#39;</span><span class="op">;</span>
+
+<span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
+    <span class="cf">return</span> <span class="at">div</span>([
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+    ])<span class="op">;</span>
+<span class="op">}</span>
+
+<span class="kw">let</span> clicks <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>
+
+<span class="at">patchDOM</span>(<span class="at">view</span>(clicks))<span class="op">;</span>
+
+<span class="va">document</span>.<span class="va">body</span>.<span class="at">addListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> () <span class="op">=&gt;</span> <span class="op">{</span>
+    clicks<span class="op">++;</span>
+    <span class="at">patchDOM</span>(<span class="at">view</span>(clicks))<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="with-streams">With streams</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="im">import</span> <span class="op">{</span> patchDOM <span class="op">}</span> <span class="im">from</span> <span class="st">&#39;./virtual-dom-patcher&#39;</span><span class="op">;</span>
+
+<span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
+    <span class="cf">return</span> <span class="at">div</span>([
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+    ])<span class="op">;</span>
+<span class="op">}</span>
+
+<span class="kw">function</span> <span class="at">applicationLogic</span>(click$) <span class="op">{</span>
+    <span class="cf">return</span> click$
+        .<span class="at">scan</span>(acc <span class="op">=&gt;</span> acc <span class="op">+</span> <span class="dv">1</span>)
+        .<span class="at">map</span>(view)
+<span class="op">}</span>
+
+<span class="at">applicationLogic</span>(<span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>))
+    .<span class="at">subscribe</span>(<span class="op">{</span>
+        <span class="dt">next</span><span class="op">:</span> patchDOM
+    <span class="op">}</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="with-streams---testing">With streams - testing</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">applicationLogic</span>(click$) <span class="op">{</span>
+    <span class="cf">return</span> click$
+        .<span class="at">fold</span>(acc <span class="op">=&gt;</span> acc <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span>)
+        .<span class="at">map</span>(view)
+<span class="op">}</span>
+
+<span class="at">it</span>(<span class="st">&#39;should display 5 clicks&#39;</span><span class="op">,</span> done <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="kw">const</span> mockClick$ <span class="op">=</span> <span class="va">xs</span>.<span class="at">of</span>(<span class="kw">null</span><span class="op">,</span> <span class="kw">null</span><span class="op">,</span> <span class="kw">null</span><span class="op">,</span> <span class="kw">null</span><span class="op">,</span> <span class="kw">null</span>)<span class="op">;</span>
+
+    <span class="kw">const</span> result$ <span class="op">=</span> <span class="at">applicationLogic</span>(mockClick$)<span class="op">;</span>
+
+    <span class="va">result$</span>.<span class="at">last</span>().<span class="at">subscribe</span>(<span class="op">{</span>
+        <span class="dt">next</span><span class="op">:</span> dom <span class="op">=&gt;</span> <span class="op">{</span>
+            <span class="at">assertEquals</span>(
+                <span class="va">dom</span>.<span class="at">children</span>[<span class="dv">0</span>].<span class="at">text</span><span class="op">,</span> <span class="st">&#39;Number of clicks: 5&#39;</span>
+            )<span class="op">;</span>
+            <span class="at">done</span>()<span class="op">;</span>
+        <span class="op">}</span>
+    <span class="op">}</span>)<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="why-signals-then">Why signals then?</h2>
+<p>Can anyone spot the bug in the code from earlier?</p>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
+    <span class="cf">return</span> <span class="at">div</span>([
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+    ])<span class="op">;</span>
+<span class="op">}</span>
+
+<span class="kw">function</span> <span class="at">applicationLogic</span>(click$) <span class="op">{</span>
+    <span class="cf">return</span> click$
+        .<span class="at">scan</span>(acc <span class="op">=&gt;</span> acc <span class="op">+</span> <span class="dv">1</span>)
+        .<span class="at">map</span>(view)
+<span class="op">}</span>
+
+<span class="at">applicationLogic</span>(<span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>))
+    .<span class="at">subscribe</span>(<span class="op">{</span>
+        <span class="dt">next</span><span class="op">:</span> patchDOM
+    <span class="op">}</span>)<span class="op">;</span></code></pre></div>
+</section>
+<section class="slide level1">
+
+<h2 id="with-signals">With Signals</h2>
+<div class="sourceCode"><pre class="sourceCode js"><code class="sourceCode javascript"><span class="kw">function</span> <span class="at">view</span>(clicks) <span class="op">{</span>
+    <span class="cf">return</span> <span class="at">div</span>([
+        <span class="at">span</span>(<span class="st">&#39;Number of clicks: &#39;</span> <span class="op">+</span> clicks<span class="st">&#39;)</span>
+    ])<span class="op">;</span>
+<span class="op">}</span>
+<span class="kw">function</span> <span class="at">applicationLogic</span>(click$) <span class="op">{</span>
+    <span class="cf">return</span> click$
+        .<span class="at">scan</span>(acc <span class="op">=&gt;</span> acc <span class="op">+</span> <span class="dv">1</span>)
+        .<span class="at">toSignal</span>(<span class="dv">0</span>) <span class="co">//initial value</span>
+        .<span class="at">map</span>(view)
+<span class="op">}</span>
+
+<span class="kw">const</span> domSignal <span class="op">=</span> <span class="at">applicationLogic</span>(
+    <span class="at">fromEvent</span>(<span class="va">document</span>.<span class="at">body</span><span class="op">,</span> <span class="st">&#39;click&#39;</span>)
+)<span class="op">;</span>
+
+<span class="kw">const</span> patch <span class="op">=</span> () <span class="op">=&gt;</span> <span class="at">requestAnimationFrame</span>(() <span class="op">=&gt;</span> <span class="op">{</span>
+    <span class="at">patchDOM</span>(<span class="va">domSignal</span>.<span class="at">pull</span>())<span class="op">;</span> <span class="at">patch</span>()<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span>
+<span class="at">patch</span>()<span class="op">;</span></code></pre></div>
+</section>
     </div>
   </div>
 
@@ -42,6 +364,8 @@
       // Full list of configuration options available at:
       // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
 
         // Optional reveal.js plugins
         dependencies: [
