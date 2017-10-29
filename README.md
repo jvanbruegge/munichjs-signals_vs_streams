@@ -350,3 +350,16 @@ patch();
 ------------------
 
 ![Stream graph](./stream_graph.png)
+
+------------------
+
+## Further information
+
+- [Cycle.js](https://cycle.js.org/)
+- [The repo where we are experimenting](https://github.com/staltz/experiment-push-pull-cyclejs)
+- If you are brave: [Conal Elliott's paper about Push/Pull FRP](http://conal.net/papers/push-pull-frp/)
+- These slides: [https://jvanbruegge.github.io/munichjs-signals_vs_streams](https://jvanbruegge.github.io/munichjs-signals_vs_streams)
+
+------------------
+
+# Q&A
