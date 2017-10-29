@@ -198,7 +198,7 @@ import { patchDOM } from './virtual-dom-patcher';
 
 function view(clicks) {
     return div([
-        span('Number of clicks: ' + clicks')
+        span('Number of clicks: ' + clicks)
     ]);
 }
 
@@ -221,7 +221,7 @@ import { patchDOM } from './virtual-dom-patcher';
 
 function view(clicks) {
     return div([
-        span('Number of clicks: ' + clicks')
+        span('Number of clicks: ' + clicks)
     ]);
 }
 
@@ -273,7 +273,7 @@ Can anyone spot the bug in the code from earlier?
 ```js
 function view(clicks) {
     return div([
-        span('Number of clicks: ' + clicks')
+        span('Number of clicks: ' + clicks)
     ]);
 }
 
@@ -296,7 +296,7 @@ applicationLogic(fromEvent(document.body, 'click'))
 ```js
 function view(clicks) {
     return div([
-        span('Number of clicks: ' + clicks')
+        span('Number of clicks: ' + clicks)
     ]);
 }
 function applicationLogic(click$) {
